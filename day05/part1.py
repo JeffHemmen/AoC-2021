@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from collections import namedtuple, defaultdict
+from math import copysign
 
 Point = namedtuple('Point', ['x', 'y'])
 Line = namedtuple('Line', ['A', 'B'])
@@ -31,16 +32,28 @@ def get_points(line):
         miny, maxy = min(line.A.y, line.B.y), max(line.A.y, line.B.y) + 1
         return [Point(line.A.x, y) for y in range(miny, maxy)]
     else:
-        raise NotImplementedError
+        minx, maxx = min(line.A.x, line.B.x), max(line.A.x, line.B.x) + 1
+        slope = copysign(1, line.B.y - line.A.y)
+        if minx == line.A.x:
+            startingy = line.A.y
+        else:
+            startingy = line.B.y
+            slope *= -1
+        
+        result = []
+        for step, x in enumerate(range(minx, maxx)):
+            y = startingy + int(step * slope)
+            result.append(Point(x, y))
+        return result
 
 Line.points = get_points # monkey-patch as method
 
 
-def main(filename):
+def main(filename, ignore_diagonal=True):
     lines = parse_lines(filename)
     points = defaultdict(lambda: 0)
     for line in lines:
-        if not is_vertical(line) and not is_horizontal(line):
+        if ignore_diagonal and not is_vertical(line) and not is_horizontal(line):
             continue
         for point in line.points():
             points[point] += 1
