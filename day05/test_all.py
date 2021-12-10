@@ -32,3 +32,19 @@ def test_parse_lines():
 def test_main():
     result = main(TEST_INPUT_FILE)
     assert result == 5
+
+### Part 2
+
+l4 = Line(Point(1, 1), Point(3, 3))
+l5 = Line(Point(9, 7), Point(7, 9))
+
+def test_points_on_diagonal():
+    assert all([Point(x, x) in l4.points() for x in range(1, 4)])
+    assert not any([Point(x, x) in l4.points() for x in [-1, 0, 4, 5]])
+    assert all([Point(*p) in l5.points() for p in [(9,7), (8,8), (7,9)]])
+    assert not any([Point(*p) in l5.points() for p in [(10,6), (6,10)]])
+
+
+def test_main_part2():
+    result = main(TEST_INPUT_FILE, ignore_diagonal=False)
+    assert result == 12
